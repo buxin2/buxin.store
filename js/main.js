@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const empty = document.getElementById("empty-products");
   const categoryList = document.getElementById("category-list");
   const resultsLabel = document.getElementById("results-label");
+  const gambiaButton = document.getElementById("gambia-filter");
+  const GAMBIA = "gambia";
   const categoryOrder = [
     "Science Experiment Kits", "DIY Kits", "Engineering Project Kits", "Electronic Science Kits", "Solar STEM Kits", "Experiment Sets",
     "Educational Robots", "Robot Kits", "Aircraft Engine Models", "Starter & Learning Kits", "Finished Systems",
@@ -34,7 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }).map(name => ({ name, count: counts.get(name) }));
   }
   function card(product) {
-    return `<article class="product-card"><a class="product-image-link" href="product-details.html?id=${encodeURIComponent(product.id)}">${Store.productImage(product.image, product.name)}</a><div class="product-info"><span class="product-category">${Store.safeText(product.category || "General")}</span><h3><a href="product-details.html?id=${encodeURIComponent(product.id)}">${Store.safeText(product.name)}</a></h3><div class="product-price">${Store.money(product.price)}</div><div class="product-card-actions"><a class="btn btn-outline" href="product-details.html?id=${encodeURIComponent(product.id)}">View product ↗</a><button class="btn btn-soft" data-add="${Store.safeText(product.id)}">＋ Add to cart</button></div></div></article>`;
+    const today = product.inGambia ? `<span class="today-badge">Today</span>` : "";
+    return `<article class="product-card"><a class="product-image-link" href="product-details.html?id=${encodeURIComponent(product.id)}">${Store.productImage(product.image, product.name)}</a><div class="product-info"><span class="product-category">${Store.safeText(product.category || "General")}${today}</span><h3><a href="product-details.html?id=${encodeURIComponent(product.id)}">${Store.safeText(product.name)}</a></h3><div class="product-price">${Store.money(product.price)}</div><div class="product-card-actions"><a class="btn btn-outline" href="product-details.html?id=${encodeURIComponent(product.id)}">View product ↗</a><button class="btn btn-soft" data-add="${Store.safeText(product.id)}">＋ Add to cart</button></div></div></article>`;
   }
   function matchesName(product, query) {
     const words = query.toLowerCase().split(/\s+/).filter(Boolean);
@@ -43,7 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function iconFor(name) {
     const n = name.toLowerCase();
-    const path = n.includes("sensor") ? "M4 12h3l2-5 4 10 2-5h5" :
+    const path = n.includes("gambia") ? "M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11zM12 11.5a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z" :
+      n.includes("sensor") ? "M4 12h3l2-5 4 10 2-5h5" :
       n.includes("display") || n.includes("oled") || n.includes("tft") ? "M4 5h16v10H4zM8 19h8" :
       n.includes("camera") ? "M4 8h3l2-2h6l2 2h3v10H4zM12 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" :
       n.includes("motor") ? "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 3v3M12 18v3M3 12h3M18 12h3" :
@@ -67,25 +71,45 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function renderCategories(selected) {
     if (!categoryList) return;
-    const items = [{ name: "All", value: "all" }, ...categories().map(item => ({ name: item.name, value: item.name }))];
+    const items = [{ name: "All", value: "all" }, { name: "Available in The Gambia", value: GAMBIA }, ...categories().map(item => ({ name: item.name, value: item.name }))];
     categoryList.innerHTML = items.map(item => `<button type="button" class="category-card${item.value === selected ? " active" : ""}" data-category="${Store.safeText(item.value)}">${iconFor(item.value === "all" ? "all" : item.name)}<span>${Store.safeText(item.name)}</span></button>`).join("");
   }
   function render() {
     const query = (search?.value || "").trim();
     const category = filter?.value || "all";
+    const inView = product => category === GAMBIA ? product.inGambia : category === "all" || product.category === category;
     renderCategories(category);
-    let list = category === "all" ? mixedProducts() : products().filter(product => product.category === category);
-    if (query) list = products().filter(product => matchesName(product, query) && (category === "all" || product.category === category));
+    gambiaButton?.classList.toggle("active", category === GAMBIA);
+    let list = category === "all" && !query ? mixedProducts() : products().filter(product => inView(product) && (!query || matchesName(product, query)));
     grid.classList.remove("hidden");
     grid.innerHTML = list.map(card).join("");
     if (resultsLabel) {
-      if (query) resultsLabel.textContent = `${list.length} product${list.length === 1 ? "" : "s"} matching “${query}”`;
+      if (category === GAMBIA && query) resultsLabel.textContent = `${list.length} in The Gambia matching “${query}”`;
+      else if (query) resultsLabel.textContent = `${list.length} product${list.length === 1 ? "" : "s"} matching “${query}”`;
+      else if (category === GAMBIA) resultsLabel.textContent = list.length ? `${list.length} available in The Gambia · buy today, get it today` : "No products available in The Gambia yet";
       else if (category !== "all") resultsLabel.textContent = `${list.length} products in ${category}`;
       else resultsLabel.textContent = "A mix from different categories";
+    }
+    const emptyTitle = empty?.querySelector("h3");
+    const emptyCopy = empty?.querySelector("p");
+    if (emptyTitle && emptyCopy) {
+      if (category === GAMBIA && !query) {
+        emptyTitle.textContent = "Nothing in The Gambia yet";
+        emptyCopy.textContent = "Mark products in admin. Buy today, get it today.";
+      } else {
+        emptyTitle.textContent = "No products found";
+        emptyCopy.textContent = "Try another search or category.";
+      }
     }
     empty?.classList.toggle("hidden", list.length > 0);
   }
 
+  if (filter && ![...filter.options].some(option => option.value === GAMBIA)) {
+    const gambiaOption = document.createElement("option");
+    gambiaOption.value = GAMBIA;
+    gambiaOption.textContent = "Available in The Gambia";
+    filter.appendChild(gambiaOption);
+  }
   categories().forEach(category => {
     const option = document.createElement("option");
     option.value = category.name;
@@ -97,6 +121,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (search && params.get("q")) search.value = params.get("q");
   search?.addEventListener("input", render);
   filter?.addEventListener("change", render);
+  gambiaButton?.addEventListener("click", () => {
+    if (!filter) return;
+    filter.value = filter.value === GAMBIA ? "all" : GAMBIA;
+    if (search) search.value = "";
+    render();
+    grid.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
   categoryList?.addEventListener("click", event => {
     const button = event.target.closest("[data-category]");
     if (!button || !filter) return;

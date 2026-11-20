@@ -4,7 +4,7 @@ window.STORE_CONFIG = {
   whatsappNumber: "919876543210", // Replace with your WhatsApp number: country code + number, digits only.
   currency: "GMD",
   currencyLocale: "en-GM",
-  demoAdminPassword: "ChangeMe123!", // DEMO ONLY. Not secure for public production use.
+  demoAdminPassword: "buxin1", // DEMO ONLY. Not secure for public production use.
   cloudinaryCloudName: "",
   cloudinaryUploadPreset: "",
   usdToInr: 88, // Supplier USD prices become the rupee amount already used in the catalogue.

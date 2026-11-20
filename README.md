@@ -9,14 +9,14 @@ For the simplest preview, open `index.html` in a browser. For best compatibility
 1. Open `js/config.js`.
 2. Change `storeName`.
 3. Change `whatsappNumber` to your WhatsApp number in international format, digits only (example: `919876543210`).
-4. Change `demoAdminPassword` before testing. The default is `ChangeMe123!`.
+4. Change `demoAdminPassword` before testing. The current password is `buxin1`.
 5. Open `admin-login.html` and sign in.
 6. Add/edit/delete products in the admin dashboard.
 7. Optionally configure Cloudinary cloud name and unsigned upload preset to upload product images from the dashboard.
 
 ## Demo admin access
 - Page: `admin-login.html`
-- Default password: `ChangeMe123!`
+- Password: `buxin1`
 
 **Security warning:** This is a frontend-only demo login. The password is visible in `js/config.js` and is not secure. Do not publish this demo admin page as a protected production dashboard.
 
