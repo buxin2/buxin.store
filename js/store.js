@@ -1,5 +1,5 @@
 (function () {
-  const PRODUCTS_KEY = "nova_store_products_v1";
+  const PRODUCTS_KEY = "buxin_store_products_v1";
   const CART_KEY = "nova_store_cart_v1";
   const SETTINGS_KEY = "nova_store_settings_v1";
   const IMAGE_FALLBACK = "assets/placeholder.svg";
@@ -13,12 +13,12 @@
   function write(key,value){localStorage.setItem(key,JSON.stringify(value))}
   function getSettings(){const saved=read(SETTINGS_KEY,{});const settings={...window.STORE_CONFIG,...saved};if(!saved.storeName||saved.storeName==="Nova Store")settings.storeName=window.STORE_CONFIG.storeName;return settings}
   function saveSettings(settings){write(SETTINGS_KEY,settings)}
-  function getProducts(){let p=read(PRODUCTS_KEY,null);if(!Array.isArray(p)){p=sampleProducts;write(PRODUCTS_KEY,p)}return p}
+  function getProducts(){const catalog=Array.isArray(window.CATALOG_PRODUCTS)&&window.CATALOG_PRODUCTS.length?window.CATALOG_PRODUCTS:sampleProducts;const saved=read(PRODUCTS_KEY,null);const list=Array.isArray(saved)&&saved.length?saved:catalog;const c=window.STORE_CONFIG||{};const rate=Number(c.usdToInr)||0,mk=Number(c.priceMarkup)||1;return list.map(x=>(x.costUsd&&!Number(x.price)&&rate>0)?{...x,price:Math.round(Number(x.costUsd)*rate*mk)}:x)}
   function saveProducts(products){write(PRODUCTS_KEY,products)}
   function getCart(){return read(CART_KEY,[])}
   function saveCart(cart){write(CART_KEY,cart);updateCartCount()}
   function updateCartCount(){const count=getCart().reduce((s,i)=>s+Number(i.quantity||0),0);document.querySelectorAll("[data-cart-count]").forEach(el=>el.textContent=count)}
-  function money(value){const s=getSettings();try{return new Intl.NumberFormat(s.currencyLocale,{style:"currency",currency:s.currency,maximumFractionDigits:2}).format(Number(value)||0)}catch(e){return "₹"+(Number(value)||0).toFixed(2)}}
+  function money(value){if(!Number(value))return "Ask for price";const s=getSettings();try{return new Intl.NumberFormat(s.currencyLocale,{style:"currency",currency:s.currency,maximumFractionDigits:0}).format(Number(value)||0)}catch(e){return "₹"+Math.round(Number(value)||0)}}
   function safeText(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
   function productImage(url,alt=""){if(url)return `<img class="product-image" src="${safeText(url)}" alt="${safeText(alt)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><div class="product-image-fallback" style="display:none">✳</div>`;return `<div class="product-image-fallback">✳</div>`}
   function addToCart(id,quantity=1){const product=getProducts().find(p=>p.id===id);if(!product)return false;const cart=getCart();const existing=cart.find(i=>i.id===id);if(existing)existing.quantity+=quantity;else cart.push({id,quantity});saveCart(cart);return true}

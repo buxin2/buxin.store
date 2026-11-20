@@ -6,5 +6,7 @@ window.STORE_CONFIG = {
   currencyLocale: "en-IN",
   demoAdminPassword: "ChangeMe123!", // DEMO ONLY. Not secure for public production use.
   cloudinaryCloudName: "",
-  cloudinaryUploadPreset: ""
+  cloudinaryUploadPreset: "",
+  usdToInr: 88, // Converts supplier USD kit prices into INR.
+  priceMarkup: 1
 };
