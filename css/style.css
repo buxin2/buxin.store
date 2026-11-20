@@ -42,6 +42,9 @@
 .gambia-check input{width:auto;flex:none}
 .arrival-pill{display:inline-flex;align-items:center;margin-top:16px;padding:8px 14px;border-radius:999px;background:var(--lime);color:var(--green-dark);font-family:Manrope,sans-serif;font-size:14px;font-weight:800;letter-spacing:-.02em}
 .admin-welcome .arrival-pill{margin:12px 0 0}
+.price-breakdown{display:flex;flex-direction:column;gap:4px;margin:10px 0 4px;color:#738078;font-size:12px}
+.price-breakdown-total{color:var(--green);font-weight:800}
+.product-price .price-note,.cart-item-note{display:block;margin-top:4px;font-size:10px;font-weight:600;color:#839087;letter-spacing:0;text-transform:none}
 .admin-shell{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh;background:#f6f8f6}
 .admin-sidebar{display:flex;flex-direction:column;gap:22px;padding:22px 16px;background:#12261c;color:#e8f2eb;position:sticky;top:0;height:100vh;overflow:auto}
 .admin-side-brand{display:flex;align-items:center;gap:10px;color:#fff;font-family:Manrope,sans-serif}
