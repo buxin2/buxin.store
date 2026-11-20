@@ -1,9 +1,9 @@
 window.STORE_DATA = {
   version: 1,
-  updatedAt: "",
+  updatedAt: "2026-11-20T16:10:00.000Z",
   settings: {
     storeName: "Buxin Store",
-    whatsappNumber: "919876543210",
+    whatsappNumber: "2207741187",
     cloudinaryCloudName: "dfizb64hx",
     cloudinaryUploadPreset: "buxin_store"
   },

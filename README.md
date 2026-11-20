@@ -8,7 +8,7 @@ For the simplest preview, open `index.html` in a browser. For best compatibility
 ## First setup
 1. Open `js/config.js`.
 2. Change `storeName`.
-3. Change `whatsappNumber` to your WhatsApp number in international format, digits only (example: `919876543210`).
+3. Change `whatsappNumber` to your WhatsApp number in international format, digits only (example: `2207741187`).
 4. Change `demoAdminPassword` before testing. The current password is `buxin1`.
 5. Open `admin-login.html` and sign in.
 6. Add/edit/delete products in the admin dashboard.
@@ -20,13 +20,17 @@ For the simplest preview, open `index.html` in a browser. For best compatibility
 
 **Security warning:** This is a frontend-only demo login. The password is visible in `js/config.js` and is not secure. Do not publish this demo admin page as a protected production dashboard.
 
-## Data storage limitation
-This starter stores product data and store settings in browser LocalStorage. This makes the complete user flow testable without a backend, but:
-- Products added in one browser are not automatically visible to other visitors.
-- Clearing browser data removes locally stored catalogue changes.
-- LocalStorage is specific to the browser and device.
+## Neon database (cloud source of truth)
+Product names, prices, images, WhatsApp settings, shipping, price rules, and Gambia marks live in Neon Postgres.
 
-To publish a shared catalogue for all visitors while keeping the public site static, connect a secure publishing workflow (such as a GitHub Actions workflow or a small protected publishing service). Keep all write tokens and secrets on the server/CI side, never in browser JavaScript. The public site can then fetch a read-only `products.json`.
+1. Put your connection string in a local `.env` file as `DATABASE_URL=...` (this file is gitignored — never commit it, never put it in frontend JS).
+2. Create tables + upload local catalogue: `python _neon_migrate.py`
+3. Download Neon → local static files before PUSH: `python _neon_pull.py`
+
+The public GitHub Pages site still reads `js/products-data.js` and `js/store-data.js`. Neon is the cloud house; pull, then PUSH, so visitors get the same data.
+
+## Browser LocalStorage note
+Admin edits in the browser are still local until you lock/pull them into the published JS files (and Neon). Clearing browser data removes only those local drafts.
 
 ## Cloudinary
 Create a Cloudinary unsigned upload preset and enter its cloud name and preset in Admin > Image hosting. Do not expose your Cloudinary API secret. Unsigned uploads should be configured with appropriate restrictions in Cloudinary.

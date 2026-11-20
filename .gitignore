@@ -5,3 +5,4 @@ _cloudinary_migrate.log
 __pycache__/
 *.pyc
 .DS_Store
+*.log

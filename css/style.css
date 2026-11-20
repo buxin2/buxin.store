@@ -87,7 +87,7 @@
   .admin-stats{grid-template-columns:1fr 1fr}
   .admin-stats-two{grid-template-columns:1fr 1fr}
 }
-.whatsapp-float{position:fixed;right:18px;bottom:18px;z-index:30;width:56px;height:56px;border:0;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 10px 24px rgba(18,140,70,.35)}
+.whatsapp-float{position:fixed;right:18px;bottom:18px;z-index:30;width:56px;height:56px;border:0;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 10px 24px rgba(18,140,70,.35);text-decoration:none;cursor:pointer}
 .whatsapp-float svg{width:30px;height:30px;fill:currentColor}
 @media(max-width:680px){
   input,select,textarea,.search-box input{font-size:16px}

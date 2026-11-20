@@ -1,7 +1,7 @@
 /* Store configuration. Change these values for your store. */
 window.STORE_CONFIG = {
   storeName: "Buxin Store",
-  whatsappNumber: "919876543210", // Replace with your WhatsApp number: country code + number, digits only.
+  whatsappNumber: "2207741187", // Country code + number, digits only (The Gambia).
   currency: "GMD",
   currencyLocale: "en-GM",
   demoAdminPassword: "buxin1", // DEMO ONLY. Not secure for public production use.
