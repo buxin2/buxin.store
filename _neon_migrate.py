@@ -127,6 +127,7 @@ def main() -> None:
                         str(p.get("title") or p.get("name") or ""),
                         float(p.get("price") or 0),
                         None if p.get("costUsd") in (None, "") else float(p["costUsd"]),
+                        str(p.get("priceCurrency") or ""),
                         str(p.get("description") or ""),
                         str(p.get("image") or ""),
                         str(p.get("category") or "General"),
@@ -136,8 +137,8 @@ def main() -> None:
             execute_batch(
                 cur,
                 """
-                INSERT INTO products (id, name, title, price, cost_usd, description, image, category, images)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO products (id, name, title, price, cost_usd, price_currency, description, image, category, images)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 rows,
                 page_size=BATCH,

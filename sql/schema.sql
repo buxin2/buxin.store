@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS products (
   title text NOT NULL DEFAULT '',
   price numeric NOT NULL DEFAULT 0,
   cost_usd numeric,
+  price_currency text NOT NULL DEFAULT '',
   description text NOT NULL DEFAULT '',
   image text NOT NULL DEFAULT '',
   category text NOT NULL DEFAULT 'General',
@@ -32,6 +33,8 @@ CREATE TABLE IF NOT EXISTS products (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+ALTER TABLE products ADD COLUMN IF NOT EXISTS price_currency text NOT NULL DEFAULT '';
 
 CREATE INDEX IF NOT EXISTS products_category_idx ON products (category);
 CREATE INDEX IF NOT EXISTS products_name_idx ON products (name);

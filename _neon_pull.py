@@ -42,7 +42,7 @@ def main() -> None:
                 sys.exit("No store_settings row in Neon. Run _neon_migrate.py first.")
             cur.execute(
                 """
-                SELECT id, name, title, price, cost_usd, description, image, category, images
+                SELECT id, name, title, price, cost_usd, price_currency, description, image, category, images
                 FROM products
                 ORDER BY category, name, id
                 """
@@ -66,6 +66,9 @@ def main() -> None:
         }
         if p["cost_usd"] is not None:
             item["costUsd"] = float(p["cost_usd"])
+        currency = (p.get("price_currency") or "").strip()
+        if currency:
+            item["priceCurrency"] = currency
         if p["images"] is not None:
             item["images"] = p["images"]
         catalog.append(item)

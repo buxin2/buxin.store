@@ -180,17 +180,20 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(!$("price-settings"))return;
     function priceStatus(){
       const rules=Store.getPriceRules();
+      const shipping=Store.getShippingFee();
       const sample=Math.round(100*rules.factor+rules.offset);
       const custom=Object.keys(rules.overrides).length;
       const changed=rules.factor!==1||rules.offset!==0||custom>0;
       const lastWords={multiply:`Multiplied by ${rules.lastAmount}`,divide:`Divided by ${rules.lastAmount}`,add:`Added D${rules.lastAmount}`,subtract:`Subtracted D${rules.lastAmount}`};
       if($("price-factor-display"))$("price-factor-display").textContent=Store.formatPriceFactor(rules.factor);
       if($("price-offset-display"))$("price-offset-display").textContent=(rules.offset>=0?"+":"−")+" D"+Math.abs(Math.round(rules.offset));
+      if($("price-shipping-display"))$("price-shipping-display").textContent=shipping?"D"+shipping:"None";
       if($("price-last-display"))$("price-last-display").textContent=rules.lastOperation&&rules.lastAmount!==null?(lastWords[rules.lastOperation]||"Saved change"):"None yet";
       if(rules.lastOperation&&$("price-operation"))$("price-operation").value=rules.lastOperation;
       if(rules.lastAmount!==null&&Number.isFinite(rules.lastAmount)&&$("price-amount"))$("price-amount").value=rules.lastAmount;
-      if(!changed){$("price-rule-status").textContent="No store-wide price change yet. A price of D100 still shows as D100. When you change prices, the multiplier and amount stay saved here after refresh."}
-      else $("price-rule-status").textContent=`Saved now: multiplier ${Store.formatPriceFactor(rules.factor)}. A starting price of D100 shows as D${sample>0?sample:0}. This stays after refresh until you change or reset it.${custom?` ${custom} ${custom===1?"product has its own price.":"products have their own price."}`:""}`;
+      const shipNote=shipping?` Shipping is separate: +D${shipping} on every product that is not in The Gambia (that is why shop totals look higher than the product price).`:"";
+      if(!changed){$("price-rule-status").textContent="No store-wide price change yet. A product price of D100 still shows as D100 until you click Apply."+shipNote+" Typing a number in Amount does nothing until you click Apply to all prices."}
+      else $("price-rule-status").textContent=`Saved now: multiplier ${Store.formatPriceFactor(rules.factor)}. A starting product price of D100 shows as D${sample>0?sample:0}. This stays after refresh until you change or reset it.${custom?` ${custom} ${custom===1?"product has its own price.":"products have their own price."}`:""}${shipNote}`;
       renderPriceSamples();
     }
     function renderPriceSamples(){
@@ -203,8 +206,12 @@ document.addEventListener("DOMContentLoaded",()=>{
       const samples=[...diy,...rest].slice(0,6);
       if(!samples.length){box.innerHTML=`<p class="settings-hint">No priced products to preview yet.</p>`;return}
       box.innerHTML=samples.map(p=>{
-        const note=p.shipping?`Product ${Store.money(p.productPrice)} + shipping ${Store.money(p.shipping)}`:`${Store.money(p.productPrice)}`;
-        return `<div class="price-result"><div><strong>${Store.safeText(p.name)}</strong><small>${Store.safeText(p.category||"General")} · base D${Math.round(p.basePrice||0)}</small></div><strong>${note}</strong></div>`;
+        const note=p.shipping
+          ? `${Store.money(p.price)} total · product ${Store.money(p.productPrice)} + shipping ${Store.money(p.shipping)}`
+          : p.inGambia
+            ? `${Store.money(p.productPrice)} · no shipping`
+            : Store.money(p.productPrice);
+        return `<div class="price-result"><div><strong>${Store.safeText(p.name)}</strong><small>${Store.safeText(p.category||"General")} · product base D${Math.round(p.basePrice||0)}</small></div><strong>${note}</strong></div>`;
       }).join("");
     }
     function renderPriceSearch(){

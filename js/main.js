@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const gambiaButton = document.getElementById("gambia-filter");
   const GAMBIA = "gambia";
   const categoryOrder = [
+    "Components in The Gambia",
     "Science Experiment Kits", "DIY Kits", "Engineering Project Kits", "Electronic Science Kits", "Solar STEM Kits", "Experiment Sets",
     "Educational Robots", "Robot Kits", "Aircraft Engine Models", "Starter & Learning Kits", "Finished Systems",
     "Smart switches - US standard", "Smart switches - EU standard", "Matter smart switches", "Ewelink smart switches",
