@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(!button)return;
       Store.setGambiaAvailable(button.dataset.gambiaId,button.dataset.gambiaOn==="1");
       renderGambia();
-      Store.toast(button.dataset.gambiaOn==="1"?"Marked as available in The Gambia.":"Removed from The Gambia list.");
+      Store.toast(button.dataset.gambiaOn==="1"?"Marked as available in The Gambia. Lock site data house before PUSH.":"Removed from The Gambia list. Lock site data house before PUSH.");
     });
     renderGambia();
   }
@@ -143,8 +143,14 @@ document.addEventListener("DOMContentLoaded",()=>{
       const sample=Math.round(100*rules.factor+rules.offset);
       const custom=Object.keys(rules.overrides).length;
       const changed=rules.factor!==1||rules.offset!==0||custom>0;
-      if(!changed){$("price-rule-status").textContent="No store-wide price change yet. A price of D100 still shows as D100.";return}
-      $("price-rule-status").textContent=`These changes apply to every price in the store. A starting price of D100 now shows as D${sample>0?sample:0}.${custom?` ${custom} ${custom===1?"product has its own price.":"products have their own price."}`:""}`;
+      const lastWords={multiply:`Multiplied by ${rules.lastAmount}`,divide:`Divided by ${rules.lastAmount}`,add:`Added D${rules.lastAmount}`,subtract:`Subtracted D${rules.lastAmount}`};
+      if($("price-factor-display"))$("price-factor-display").textContent=Store.formatPriceFactor(rules.factor);
+      if($("price-offset-display"))$("price-offset-display").textContent=(rules.offset>=0?"+":"−")+" D"+Math.abs(Math.round(rules.offset));
+      if($("price-last-display"))$("price-last-display").textContent=rules.lastOperation&&rules.lastAmount!==null?(lastWords[rules.lastOperation]||"Saved change"):"None yet";
+      if(rules.lastOperation&&$("price-operation"))$("price-operation").value=rules.lastOperation;
+      if(rules.lastAmount!==null&&$("price-amount"))$("price-amount").value=rules.lastAmount;
+      if(!changed){$("price-rule-status").textContent="No store-wide price change yet. A price of D100 still shows as D100. When you change prices, the multiplier and amount stay saved here after refresh.";return}
+      $("price-rule-status").textContent=`Saved now: multiplier ${Store.formatPriceFactor(rules.factor)}. A starting price of D100 shows as D${sample>0?sample:0}. This stays after refresh until you change or reset it.${custom?` ${custom} ${custom===1?"product has its own price.":"products have their own price."}`:""}`;
     }
     function renderPriceSearch(){
       refreshProducts();
@@ -166,16 +172,16 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(!confirm(`${words[operation]||"Update every price"}? This updates the whole store.`))return;
       const result=Store.adjustAllPrices(operation,amount);
       if(!result.ok){alert(result.message);return}
-      $("price-amount").value="";
       priceStatus();renderPriceSearch();
-      Store.toast("All prices updated.");
+      Store.toast("Price change saved. Lock site data house before PUSH.");
     });
     $("price-reset")?.addEventListener("click",()=>{
       if(!confirm("Reset every price back to the original dalasi amount?"))return;
       Store.resetPriceAdjustments();
-      $("price-amount").value="";
+      if($("price-operation"))$("price-operation").value="multiply";
+      if($("price-amount"))$("price-amount").value="";
       priceStatus();renderPriceSearch();
-      Store.toast("Prices reset.");
+      Store.toast("Prices reset. Lock site data house before PUSH.");
     });
     $("price-search")?.addEventListener("input",renderPriceSearch);
     $("price-search-results")?.addEventListener("submit",e=>{
@@ -197,19 +203,25 @@ document.addEventListener("DOMContentLoaded",()=>{
     function shippingStatus(){
       const fee=Store.getShippingFee();
       if($("shipping-amount"))$("shipping-amount").value=fee;
-      if($("shipping-status"))$("shipping-status").textContent=fee?`Shipping is D${fee}. It is added to every priced product that is not available in The Gambia.`:"No shipping price set. Products show their product price only.";
+      if($("shipping-status"))$("shipping-status").textContent=fee?`Saved shipping: D${fee}. It stays after refresh until you change it, and is added to every priced product that is not available in The Gambia.`:"No shipping price set yet. When you save one, it stays here until you change it.";
     }
     $("shipping-form").addEventListener("submit",e=>{
       e.preventDefault();
       const result=Store.setShippingFee($("shipping-amount").value);
       if(!result.ok){alert(result.message);return}
       shippingStatus();
-      Store.toast(Store.getShippingFee()?"Shipping price saved.":"Shipping price cleared.");
+      Store.toast(Store.getShippingFee()?"Shipping price saved. Lock site data house before PUSH.":"Shipping cleared. Lock site data house before PUSH.");
     });
     shippingStatus();
   }
 
   function initSettings(){
+    function renderSiteData(){
+      const data=Store.buildSiteData();
+      const box=$("site-data-summary");
+      if(box){box.className="price-saved-state price-saved-state-four";box.innerHTML=`<div><span>WhatsApp</span><strong>${Store.safeText(data.settings.whatsappNumber||"Not set")}</strong></div><div><span>Shipping</span><strong>${data.shippingFee?"D"+data.shippingFee:"None"}</strong></div><div><span>Multiplier</span><strong>${Store.formatPriceFactor(data.priceRules.factor)}</strong></div><div><span>In The Gambia</span><strong>${data.gambiaIds.length}</strong></div>`}
+      if($("site-data-status"))$("site-data-status").textContent=`House ready. WhatsApp, shipping, pricing, and ${data.gambiaIds.length} Gambia product mark(s) will stay after PUSH when you lock them into js/store-data.js.`;
+    }
     if($("setting-store-name"))$("setting-store-name").value=Store.getSettings().storeName;
     if($("setting-whatsapp"))$("setting-whatsapp").value=Store.getSettings().whatsappNumber;
     if($("cloud-name"))$("cloud-name").value=cloud.name;
@@ -221,7 +233,8 @@ document.addEventListener("DOMContentLoaded",()=>{
       s.whatsappNumber=$("setting-whatsapp").value.replace(/\D/g,"");
       Store.saveSettings(s);
       Store.applyStoreName();
-      Store.toast("Store settings saved.");
+      renderSiteData();
+      Store.toast("Store settings saved. Lock the site data house before PUSH.");
     });
     $("cloudinary-form")?.addEventListener("submit",e=>{
       e.preventDefault();
@@ -230,8 +243,16 @@ document.addEventListener("DOMContentLoaded",()=>{
       s.cloudinaryCloudName=cloud.name;
       s.cloudinaryUploadPreset=cloud.preset;
       Store.saveSettings(s);
-      Store.toast("Image settings saved.");
+      renderSiteData();
+      Store.toast("Image settings saved. Lock the site data house before PUSH.");
     });
+    $("lock-site-data")?.addEventListener("click",async()=>{
+      const result=await Store.downloadSiteData();
+      renderSiteData();
+      if(result?.cancelled)return;
+      Store.toast(result?.method==="file"?"Saved into store-data.js. Now PUSH to keep it live.":"Downloaded store-data.js. Put it in the js folder, then PUSH.");
+    });
+    renderSiteData();
   }
 
   renderSidebar();
