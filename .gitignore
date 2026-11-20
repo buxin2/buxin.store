@@ -1,0 +1,7 @@
+.env
+.env.*
+_cloudinary_migrate_state.json
+_cloudinary_migrate.log
+__pycache__/
+*.pyc
+.DS_Store

@@ -4,8 +4,8 @@ window.STORE_DATA = {
   settings: {
     storeName: "Buxin Store",
     whatsappNumber: "919876543210",
-    cloudinaryCloudName: "",
-    cloudinaryUploadPreset: ""
+    cloudinaryCloudName: "dfizb64hx",
+    cloudinaryUploadPreset: "buxin_store"
   },
   shippingFee: 0,
   priceRules: {
