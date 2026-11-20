@@ -24,13 +24,23 @@ document.addEventListener("DOMContentLoaded",()=>{
   }
 
   function refreshProducts(){products=Store.getProducts();return products}
+  function adminPriceCell(p){
+    if(!Number(p.productPrice)&&!Number(p.price))return Store.money(0);
+    if(p.inGambia)return `<strong>${Store.money(p.productPrice)}</strong><small>No shipping</small>`;
+    if(Number(p.shipping)>0)return `<strong>${Store.money(p.price)}</strong><small>Product ${Store.money(p.productPrice)} + shipping ${Store.money(p.shipping)}</small>`;
+    return `<strong>${Store.money(p.productPrice)}</strong>`;
+  }
 
   function initHome(){
-    const list=refreshProducts();
-    if($("stat-products"))$("stat-products").textContent=list.length;
-    if($("stat-categories"))$("stat-categories").textContent=new Set(list.map(p=>p.category)).size;
-    if($("stat-gambia"))$("stat-gambia").textContent=list.filter(p=>p.inGambia).length;
-    if($("stat-shipping"))$("stat-shipping").textContent=Store.getShippingFee()?Store.money(Store.getShippingFee()):"Not set";
+    function paintHome(){
+      const list=refreshProducts();
+      if($("stat-products"))$("stat-products").textContent=list.length;
+      if($("stat-categories"))$("stat-categories").textContent=new Set(list.map(p=>p.category)).size;
+      if($("stat-gambia"))$("stat-gambia").textContent=list.filter(p=>p.inGambia).length;
+      if($("stat-shipping"))$("stat-shipping").textContent=Store.getShippingFee()?Store.money(Store.getShippingFee()):"Not set";
+    }
+    paintHome();
+    Store.subscribe(paintHome);
   }
 
   function initSuppliers(){
@@ -48,7 +58,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         if(!suppliers.length){listEl.innerHTML="";return}
         const blocks=await Promise.all(suppliers.map(async s=>{
           const products=s.products||await SupplierData.listSupplierProducts(s.id);
-          const rows=products.length?products.map(p=>`<tr><td><strong>${Store.safeText(p.name)}</strong><small>${Store.safeText(p.title||"")}</small></td><td>${Store.safeText(p.category||"—")}</td><td>${Store.money(p.price)}</td><td>${Store.safeText(p.description||"—")}</td></tr>`).join(""):`<tr><td colspan="4">No products yet.</td></tr>`;
+          const rows=products.length?products.map(p=>`<tr><td><strong>${Store.safeText(p.name)}</strong><small>${Store.safeText(p.title||"")}</small></td><td>${Store.safeText(p.category||"—")}</td><td>${adminPriceCell(p)}</td><td>${Store.safeText(p.description||"—")}</td></tr>`).join(""):`<tr><td colspan="4">No products yet.</td></tr>`;
           return `<article class="supplier-admin-card"><header><div><h3>${Store.safeText(s.name)}</h3><p>${products.length} product${products.length===1?"":"s"}</p></div></header><div class="table-wrap"><table class="admin-table"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Description</th></tr></thead><tbody>${rows}</tbody></table></div></article>`;
         }));
         listEl.innerHTML=blocks.join("");
@@ -71,7 +81,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       const q=($("admin-search")?.value||"").toLowerCase();
       const shown=products.filter(p=>(p.name+" "+p.title+" "+p.category).toLowerCase().includes(q));
       $("admin-empty")?.classList.toggle("hidden",shown.length>0);
-      if($("admin-product-list"))$("admin-product-list").innerHTML=shown.map(p=>`<tr><td><div class="table-product">${p.image?`<img src="${Store.safeText(p.image)}" alt="" onerror="this.style.display='none'">`:`<div class="brand-mark">✳</div>`}<div><strong>${Store.safeText(p.name)}</strong><small>${Store.safeText(p.title||"")}</small></div></div></td><td>${Store.safeText(p.category||"—")}</td><td><strong>${Store.money(p.price)}</strong></td><td><div class="table-actions"><button data-edit="${p.id}">Edit</button><button class="delete-action" data-delete="${p.id}">Delete</button></div></td></tr>`).join("");
+      if($("admin-product-list"))$("admin-product-list").innerHTML=shown.map(p=>`<tr><td><div class="table-product">${p.image?`<img src="${Store.safeText(p.image)}" alt="" onerror="this.style.display='none'">`:`<div class="brand-mark">✳</div>`}<div><strong>${Store.safeText(p.name)}</strong><small>${Store.safeText(p.title||"")}</small></div></div></td><td>${Store.safeText(p.category||"—")}</td><td>${adminPriceCell(p)}</td><td><div class="table-actions"><button data-edit="${p.id}">Edit</button><button class="delete-action" data-delete="${p.id}">Delete</button></div></td></tr>`).join("");
       const cats=[...new Set(products.map(p=>p.category).filter(Boolean))];
       if($("category-options"))$("category-options").innerHTML=cats.map(c=>`<option value="${Store.safeText(c)}">`).join("");
     }
@@ -104,6 +114,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     $("add-product-top")?.addEventListener("click",()=>openModal(null));
     document.querySelectorAll("[data-close-modal]").forEach(el=>el.addEventListener("click",closeModal));
     $("admin-search")?.addEventListener("input",refresh);
+    Store.subscribe(refresh);
     $("admin-product-list")?.addEventListener("click",e=>{
       const edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]");
       if(edit){const p=products.find(x=>x.id===edit.dataset.edit);if(p)openModal(p)}
@@ -162,6 +173,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       Store.toast(button.dataset.gambiaOn==="1"?"Marked as available in The Gambia. Lock site data house before PUSH.":"Removed from The Gambia list. Lock site data house before PUSH.");
     });
     renderGambia();
+    Store.subscribe(renderGambia);
   }
 
   function initPricing(){
@@ -185,7 +197,10 @@ document.addEventListener("DOMContentLoaded",()=>{
       const box=$("price-sample-results");
       if(!box)return;
       refreshProducts();
-      const samples=products.filter(p=>Number(p.productPrice)>0).slice(0,6);
+      const priced=products.filter(p=>Number(p.basePrice)>0||Number(p.productPrice)>0);
+      const diy=priced.filter(p=>p.category==="DIY Kits").slice(0,2);
+      const rest=priced.filter(p=>p.category!=="DIY Kits").slice(0,4);
+      const samples=[...diy,...rest].slice(0,6);
       if(!samples.length){box.innerHTML=`<p class="settings-hint">No priced products to preview yet.</p>`;return}
       box.innerHTML=samples.map(p=>{
         const note=p.shipping?`Product ${Store.money(p.productPrice)} + shipping ${Store.money(p.shipping)}`:`${Store.money(p.productPrice)}`;
@@ -241,6 +256,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     });
     priceStatus();
     renderPriceSearch();
+    Store.subscribe(()=>{priceStatus();renderPriceSearch()});
   }
 
   function initShipping(){
@@ -260,6 +276,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       }catch(err){alert(err.message||"Could not save shipping.")}
     });
     shippingStatus();
+    Store.subscribe(shippingStatus);
   }
 
   function initSettings(){
@@ -300,6 +317,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       Store.toast(result?.method==="file"?"Saved into store-data.js. Now PUSH to keep it live.":"Downloaded store-data.js. Put it in the js folder, then PUSH.");
     });
     renderSiteData();
+    Store.subscribe(renderSiteData);
   }
 
   renderSidebar();

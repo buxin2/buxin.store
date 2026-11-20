@@ -143,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
     Store.toast("Product added to your cart.");
   });
   render();
+  Store.subscribe(() => render());
   document.querySelector(".menu-toggle")?.addEventListener("click", () => document.querySelector(".main-nav")?.classList.toggle("open"));
   const contact = document.getElementById("contact-whatsapp");
   if (contact) contact.addEventListener("click", event => { event.preventDefault(); Store.openWhatsApp("Hello! I have a question about your products."); });
