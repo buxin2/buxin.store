@@ -32,10 +32,7 @@
         <div class="hero-proof"><div class="proof-avatars"><i>✓</i><i>✦</i><i>↗</i></div><span>Personal support from product selection to order</span></div>
       </div>
       <div class="hero-visual">
-        <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
-        <div class="hero-card hero-card-main"><div class="hero-card-top"><span>CURATED FOR YOU</span><span>✳</span></div><div class="hero-product-art"><div class="art-circle"></div><div class="art-device"><div class="device-screen"></div><div class="device-button"></div></div></div><div class="hero-card-bottom"><div><small>THE LATEST FINDS</small><strong>Made for everyday</strong></div><span class="round-arrow">↗</span></div></div>
-        <div class="floating-note"><span class="note-icon">✦</span><div><strong>Easy ordering</strong><small>Checkout on WhatsApp</small></div></div>
-        <div class="hero-sticker">GOOD<br>CHOICES<br>LIVE HERE.</div>
+        <img class="hero-photo" src="assets/hero.png" alt="Modular AI robotics kits">
       </div>
     </section>
 
@@ -43,7 +40,9 @@
 
     <section class="section products-section" id="products">
       <div class="section-heading"><div><span class="eyebrow">OUR COLLECTION</span><h2>Explore our products<span class="heading-period">.</span></h2><p>Find something you'll love from our latest collection.</p></div><a class="text-link desktop-link" href="#products">Browse collection <span>→</span></a></div>
-      <div class="catalog-toolbar"><label class="search-box"><span>⌕</span><input id="product-search" type="search" placeholder="Search products..." aria-label="Search products"></label><div class="category-wrap"><select id="category-filter" aria-label="Filter by category"><option value="all">All categories</option></select></div></div>
+      <div class="catalog-toolbar"><label class="search-box"><span>⌕</span><input id="product-search" type="search" placeholder="Search by product name" aria-label="Search by product name"></label><div class="category-wrap"><select id="category-filter" aria-label="Filter by category"><option value="all">All categories</option></select></div></div>
+      <div id="category-list" class="category-list"></div>
+      <p id="results-label" class="results-label"></p>
       <div id="product-grid" class="product-grid" aria-live="polite"></div>
       <div id="empty-products" class="empty-state hidden"><div class="empty-icon">✳</div><h3>No products found</h3><p>Try another search or category.</p></div>
     </section>

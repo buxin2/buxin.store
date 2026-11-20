@@ -13,7 +13,8 @@
   function write(key,value){localStorage.setItem(key,JSON.stringify(value))}
   function getSettings(){const saved=read(SETTINGS_KEY,{});const settings={...window.STORE_CONFIG,...saved};if(!saved.storeName||saved.storeName==="Nova Store")settings.storeName=window.STORE_CONFIG.storeName;return settings}
   function saveSettings(settings){write(SETTINGS_KEY,settings)}
-  function getProducts(){const catalog=Array.isArray(window.CATALOG_PRODUCTS)&&window.CATALOG_PRODUCTS.length?window.CATALOG_PRODUCTS:sampleProducts;const saved=read(PRODUCTS_KEY,null);const list=Array.isArray(saved)&&saved.length?saved:catalog;const c=window.STORE_CONFIG||{};const rate=Number(c.usdToInr)||0,mk=Number(c.priceMarkup)||1;return list.map(x=>(x.costUsd&&!Number(x.price)&&rate>0)?{...x,price:Math.round(Number(x.costUsd)*rate*mk)}:x)}
+  function displayCategory(product){const category=product.category||"General";if(category==="Modules")return "Modules & Components";if(category==="Starter Kits")return "Starter & Learning Kits";return category}
+  function getProducts(){const catalog=Array.isArray(window.CATALOG_PRODUCTS)&&window.CATALOG_PRODUCTS.length?window.CATALOG_PRODUCTS:sampleProducts;const saved=read(PRODUCTS_KEY,null);const list=Array.isArray(saved)&&saved.length?saved:catalog;const c=window.STORE_CONFIG||{};const rate=Number(c.usdToInr)||0,mk=Number(c.priceMarkup)||1;return list.map(x=>{const item={...x,category:displayCategory(x)};if(item.costUsd&&!Number(item.price)&&rate>0)item.price=Math.round(Number(item.costUsd)*rate*mk);return item})}
   function saveProducts(products){write(PRODUCTS_KEY,products)}
   function getCart(){return read(CART_KEY,[])}
   function saveCart(cart){write(CART_KEY,cart);updateCartCount()}
