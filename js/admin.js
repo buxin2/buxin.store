@@ -176,9 +176,21 @@ document.addEventListener("DOMContentLoaded",()=>{
       if($("price-offset-display"))$("price-offset-display").textContent=(rules.offset>=0?"+":"−")+" D"+Math.abs(Math.round(rules.offset));
       if($("price-last-display"))$("price-last-display").textContent=rules.lastOperation&&rules.lastAmount!==null?(lastWords[rules.lastOperation]||"Saved change"):"None yet";
       if(rules.lastOperation&&$("price-operation"))$("price-operation").value=rules.lastOperation;
-      if(rules.lastAmount!==null&&$("price-amount"))$("price-amount").value=rules.lastAmount;
-      if(!changed){$("price-rule-status").textContent="No store-wide price change yet. A price of D100 still shows as D100. When you change prices, the multiplier and amount stay saved here after refresh.";return}
-      $("price-rule-status").textContent=`Saved now: multiplier ${Store.formatPriceFactor(rules.factor)}. A starting price of D100 shows as D${sample>0?sample:0}. This stays after refresh until you change or reset it.${custom?` ${custom} ${custom===1?"product has its own price.":"products have their own price."}`:""}`;
+      if(rules.lastAmount!==null&&Number.isFinite(rules.lastAmount)&&$("price-amount"))$("price-amount").value=rules.lastAmount;
+      if(!changed){$("price-rule-status").textContent="No store-wide price change yet. A price of D100 still shows as D100. When you change prices, the multiplier and amount stay saved here after refresh."}
+      else $("price-rule-status").textContent=`Saved now: multiplier ${Store.formatPriceFactor(rules.factor)}. A starting price of D100 shows as D${sample>0?sample:0}. This stays after refresh until you change or reset it.${custom?` ${custom} ${custom===1?"product has its own price.":"products have their own price."}`:""}`;
+      renderPriceSamples();
+    }
+    function renderPriceSamples(){
+      const box=$("price-sample-results");
+      if(!box)return;
+      refreshProducts();
+      const samples=products.filter(p=>Number(p.productPrice)>0).slice(0,6);
+      if(!samples.length){box.innerHTML=`<p class="settings-hint">No priced products to preview yet.</p>`;return}
+      box.innerHTML=samples.map(p=>{
+        const note=p.shipping?`Product ${Store.money(p.productPrice)} + shipping ${Store.money(p.shipping)}`:`${Store.money(p.productPrice)}`;
+        return `<div class="price-result"><div><strong>${Store.safeText(p.name)}</strong><small>${Store.safeText(p.category||"General")} · base D${Math.round(p.basePrice||0)}</small></div><strong>${note}</strong></div>`;
+      }).join("");
     }
     function renderPriceSearch(){
       refreshProducts();
@@ -198,18 +210,23 @@ document.addEventListener("DOMContentLoaded",()=>{
       const amount=Number($("price-amount").value);
       const words={multiply:`Multiply every price by ${amount}`,divide:`Divide every price by ${amount}`,add:`Add D${amount} to every price`,subtract:`Subtract D${amount} from every price`};
       if(!confirm(`${words[operation]||"Update every price"}? This updates the whole store.`))return;
-      const result=Store.adjustAllPrices(operation,amount);
-      if(!result.ok){alert(result.message);return}
-      priceStatus();renderPriceSearch();
-      Store.toast("Price change saved. Lock site data house before PUSH.");
+      try{
+        const result=Store.adjustAllPrices(operation,amount);
+        if(!result.ok){alert(result.message||"Could not update prices.");return}
+        priceStatus();renderPriceSearch();
+        Store.toast("Price change saved. Lock site data house before PUSH.");
+      }catch(err){alert(err.message||"Could not update prices.")}
     });
     $("price-reset")?.addEventListener("click",()=>{
       if(!confirm("Reset every price back to the original dalasi amount?"))return;
-      Store.resetPriceAdjustments();
-      if($("price-operation"))$("price-operation").value="multiply";
-      if($("price-amount"))$("price-amount").value="";
-      priceStatus();renderPriceSearch();
-      Store.toast("Prices reset. Lock site data house before PUSH.");
+      try{
+        const result=Store.resetPriceAdjustments();
+        if(result&&result.ok===false){alert(result.message||"Could not reset prices.");return}
+        if($("price-operation"))$("price-operation").value="multiply";
+        if($("price-amount"))$("price-amount").value="";
+        priceStatus();renderPriceSearch();
+        Store.toast("Prices reset. Lock site data house before PUSH.");
+      }catch(err){alert(err.message||"Could not reset prices.")}
     });
     $("price-search")?.addEventListener("input",renderPriceSearch);
     $("price-search-results")?.addEventListener("submit",e=>{
@@ -218,7 +235,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       e.preventDefault();
       const price=Number(form.querySelector("input").value);
       if(!Number.isFinite(price)||price<0){alert("Enter a valid price in dalasi.");return}
-      Store.setProductPrice(form.dataset.priceId,price);
+      if(!Store.setProductPrice(form.dataset.priceId,price)){alert("Could not save that product price.");return}
       priceStatus();renderPriceSearch();
       Store.toast("Price saved.");
     });
@@ -235,10 +252,12 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
     $("shipping-form").addEventListener("submit",e=>{
       e.preventDefault();
-      const result=Store.setShippingFee($("shipping-amount").value);
-      if(!result.ok){alert(result.message);return}
-      shippingStatus();
-      Store.toast(Store.getShippingFee()?"Shipping price saved. Lock site data house before PUSH.":"Shipping cleared. Lock site data house before PUSH.");
+      try{
+        const result=Store.setShippingFee($("shipping-amount").value);
+        if(!result.ok){alert(result.message);return}
+        shippingStatus();
+        Store.toast(Store.getShippingFee()?"Shipping price saved. Lock site data house before PUSH.":"Shipping cleared. Lock site data house before PUSH.");
+      }catch(err){alert(err.message||"Could not save shipping.")}
     });
     shippingStatus();
   }

@@ -25,6 +25,7 @@
 .price-adjust-form select{height:44px;border:1px solid #dfe6e0;border-radius:8px;padding:0 12px;background:#fff}
 #price-reset{margin:0 23px 8px}
 .price-single{padding:8px 23px 22px}
+.price-sample-heading{margin:18px 0 0;font-family:Manrope,sans-serif;font-size:15px;letter-spacing:-.02em}
 .price-results{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .price-result{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
 .price-result strong,.price-result small{display:block}
