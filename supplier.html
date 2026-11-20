@@ -4,54 +4,94 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="assets/logo.png">
-  <title>Supplier intake | Buxin Store</title>
+  <title>Suppliers | Buxin Store</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="supplier-body">
+  <div class="supplier-glow supplier-glow-a" aria-hidden="true"></div>
+  <div class="supplier-glow supplier-glow-b" aria-hidden="true"></div>
+  <div class="supplier-grid" aria-hidden="true"></div>
+
   <main class="supplier-shell">
-    <a class="brand" href="index.html"><img class="brand-logo" src="assets/logo.png" alt=""><span data-store-name>Buxin Store</span></a>
-    <section class="supplier-card">
-      <span class="eyebrow">SUPPLIER INTAKE</span>
-      <h1>Add your products.</h1>
-      <p class="supplier-lead">No password needed. Enter your supplier name, then add products one by one.</p>
-
-      <div id="supplier-name-step">
-        <form id="supplier-name-form" class="settings-form">
-          <label>Supplier name<input id="supplier-name" required placeholder="Your company or your name" autocomplete="organization"></label>
-          <button class="btn btn-primary" type="submit">Continue <span>→</span></button>
-        </form>
+    <header class="supplier-brand">
+      <img class="brand-logo" src="assets/logo.png" alt="">
+      <div>
+        <strong data-store-name>Buxin Store</strong>
+        <span>Supplier desk</span>
       </div>
+    </header>
 
-      <div id="supplier-product-step" class="hidden">
-        <div class="supplier-active">
-          <div>
+    <section class="supplier-stage" id="supplier-name-step">
+      <p class="supplier-kicker">Welcome</p>
+      <h1 class="supplier-title">Buxin Store</h1>
+      <p class="supplier-lead">Tell us who you are, then add your products one by one.</p>
+      <form id="supplier-name-form" class="supplier-form">
+        <label class="supplier-field">
+          <span>Your name or company</span>
+          <input id="supplier-name" required placeholder="e.g. Green Parts Trading" autocomplete="organization">
+        </label>
+        <button class="btn btn-primary supplier-cta" type="submit">Continue <span>→</span></button>
+      </form>
+      <p id="supplier-status-name" class="supplier-status" role="status"></p>
+    </section>
+
+    <section class="supplier-stage hidden" id="supplier-product-step">
+      <div class="supplier-progress">
+        <div class="supplier-progress-copy">
+          <p class="supplier-kicker">Adding products</p>
+          <h1 class="supplier-title supplier-title-sm"><span data-store-name>Buxin Store</span></h1>
+          <p class="supplier-lead">Save one product, then enter the next. Keep going as long as you need.</p>
+        </div>
+        <div class="supplier-chip-row">
+          <div class="supplier-chip">
             <span>Supplier</span>
             <strong id="active-supplier-name">—</strong>
           </div>
-          <div>
-            <span>Products saved</span>
+          <div class="supplier-chip">
+            <span>Saved</span>
             <strong id="supplier-product-count">0</strong>
           </div>
-          <button type="button" id="change-supplier" class="btn btn-outline btn-small">Change supplier</button>
+          <button type="button" id="change-supplier" class="supplier-switch">Switch</button>
         </div>
-        <form id="supplier-product-form" class="settings-form">
-          <label>Product name<input id="product-name" required placeholder="Product name"></label>
-          <label>Title / short label<input id="product-title" placeholder="Optional short title"></label>
-          <label>Price (dalasi)<input id="product-price" type="number" min="0" step="1" placeholder="0"></label>
-          <label>Category<input id="product-category" placeholder="e.g. Electronics" list="supplier-category-options"></label>
-          <datalist id="supplier-category-options"></datalist>
-          <label>Description<textarea id="product-description" rows="4" placeholder="What is this product?"></textarea></label>
-          <label>Image URL (optional)<input id="product-image" type="url" placeholder="https://..."></label>
-          <button id="supplier-save-product" class="btn btn-primary" type="submit">Save product</button>
-        </form>
       </div>
 
+      <form id="supplier-product-form" class="supplier-form supplier-form-grid">
+        <label class="supplier-field">
+          <span>Product name</span>
+          <input id="product-name" required placeholder="Product name">
+        </label>
+        <label class="supplier-field">
+          <span>Short title</span>
+          <input id="product-title" placeholder="Optional">
+        </label>
+        <label class="supplier-field">
+          <span>Price (dalasi)</span>
+          <input id="product-price" type="number" min="0" step="1" placeholder="0">
+        </label>
+        <label class="supplier-field">
+          <span>Category</span>
+          <input id="product-category" placeholder="e.g. Electronics" list="supplier-category-options">
+        </label>
+        <datalist id="supplier-category-options"></datalist>
+        <label class="supplier-field supplier-field-wide">
+          <span>Description</span>
+          <textarea id="product-description" rows="4" placeholder="A short description of the product"></textarea>
+        </label>
+        <label class="supplier-field supplier-field-wide">
+          <span>Image link</span>
+          <input id="product-image" type="url" placeholder="https://…">
+        </label>
+        <div class="supplier-actions">
+          <button id="supplier-save-product" class="btn btn-primary supplier-cta" type="submit">Save product</button>
+        </div>
+      </form>
       <p id="supplier-status" class="supplier-status" role="status"></p>
     </section>
   </main>
+
   <div id="toast" class="toast"></div>
   <script src="js/config.js"></script>
   <script src="js/store-data.js"></script>

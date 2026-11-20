@@ -7,12 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const activeName = $("active-supplier-name");
   const productCount = $("supplier-product-count");
   const status = $("supplier-status");
+  const statusName = $("supplier-status-name");
   const saveBtn = $("supplier-save-product");
 
-  function showStatus(message, ok) {
-    if (!status) return;
-    status.textContent = message;
-    status.className = "supplier-status " + (ok ? "ok" : "err");
+  function showStatus(target, message, ok) {
+    if (!target) return;
+    target.textContent = message || "";
+    target.className = "supplier-status" + (message ? (ok ? " ok" : " err") : "");
   }
 
   function paintCount(name) {
@@ -25,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     productStep?.classList.remove("hidden");
     if (activeName) activeName.textContent = name;
     paintCount(name);
-    showStatus("Add your products one by one. After each save you can enter another.", true);
+    showStatus(status, "", true);
     $("product-name")?.focus();
   }
 
@@ -33,7 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
     productStep?.classList.add("hidden");
     nameStep?.classList.remove("hidden");
     SupplierData.clearSessionSupplier();
-    if (status) status.textContent = "";
+    showStatus(status, "", true);
+    showStatus(statusName, "", true);
     $("supplier-name")?.focus();
   }
 
@@ -45,15 +47,15 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const name = SupplierData.normalizeName($("supplier-name").value);
     if (!name) {
-      showStatus("Enter the supplier name to continue.", false);
+      showStatus(statusName, "Enter your name or company to continue.", false);
       return;
     }
     try {
       await SupplierData.ensureSupplier(name);
       showProducts(name);
-      Store.toast("Welcome, " + name + ". You can add products now.");
+      Store.toast("Welcome, " + name);
     } catch (err) {
-      showStatus(err.message || "Could not start. Try again.", false);
+      showStatus(statusName, err.message || "Could not continue. Try again.", false);
     }
   });
 
@@ -85,11 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
       await SupplierData.addProduct(name, payload);
       productForm.reset();
       paintCount(name);
-      showStatus("Saved. Enter the next product when you are ready.", true);
-      Store.toast("Product saved. You can add another.");
+      showStatus(status, "Saved. Ready for the next product.", true);
+      Store.toast("Product saved");
       $("product-name")?.focus();
     } catch (err) {
-      showStatus(err.message || "Could not save this product. Try again.", false);
+      showStatus(status, err.message || "Could not save this product.", false);
     } finally {
       if (saveBtn) {
         saveBtn.disabled = false;
