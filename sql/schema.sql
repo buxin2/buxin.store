@@ -46,3 +46,26 @@ CREATE TABLE IF NOT EXISTS gambia_products (
   product_id text PRIMARY KEY REFERENCES products (id) ON DELETE CASCADE,
   marked_at timestamptz NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS suppliers (
+  id text PRIMARY KEY,
+  name text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS suppliers_name_lower_idx ON suppliers (lower(name));
+
+CREATE TABLE IF NOT EXISTS supplier_products (
+  id text PRIMARY KEY,
+  supplier_id text NOT NULL REFERENCES suppliers (id) ON DELETE CASCADE,
+  name text NOT NULL,
+  title text NOT NULL DEFAULT '',
+  price numeric NOT NULL DEFAULT 0,
+  category text NOT NULL DEFAULT 'General',
+  description text NOT NULL DEFAULT '',
+  image text NOT NULL DEFAULT '',
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS supplier_products_supplier_idx ON supplier_products (supplier_id, created_at DESC);

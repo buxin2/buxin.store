@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" href="assets/logo.png"><title>Suppliers | Admin | Buxin Store</title><link rel="stylesheet" href="css/style.css"></head>
+<body class="admin-body" data-admin-page="suppliers">
+<div class="admin-shell">
+  <aside id="admin-sidebar" class="admin-sidebar"></aside>
+  <div class="admin-stage">
+    <header class="admin-topbar"><div><span class="eyebrow">INTAKE</span><h1>Suppliers<span class="heading-period">.</span></h1></div></header>
+    <main class="admin-main">
+      <div class="admin-panel settings-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Supplier submissions</h2>
+            <p>Public intake link (no password): <code id="supplier-link">supplier.html</code>. Share that link only with suppliers.</p>
+          </div>
+          <button type="button" id="refresh-suppliers" class="btn btn-outline btn-small">Refresh</button>
+        </div>
+        <div class="admin-stats admin-stats-two" style="margin-bottom:18px">
+          <div class="stat-card"><span>Suppliers</span><strong id="stat-suppliers">0</strong></div>
+          <div class="stat-card"><span>Products submitted</span><strong id="stat-supplier-products">0</strong></div>
+        </div>
+        <div id="supplier-list" class="supplier-admin-list"></div>
+        <div id="supplier-empty" class="empty-state hidden"><h3>No supplier products yet</h3><p>When a supplier uses your intake link, their name and products will show here.</p></div>
+      </div>
+    </main>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="js/config.js"></script><script src="js/store-data.js"></script><script src="js/products-data.js"></script><script src="js/store.js"></script><script src="js/supplier-data.js"></script><script src="js/admin.js"></script>
+</body></html>

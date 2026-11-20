@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="assets/logo.png">
+  <title>Supplier intake | Buxin Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="supplier-body">
+  <main class="supplier-shell">
+    <a class="brand" href="index.html"><img class="brand-logo" src="assets/logo.png" alt=""><span data-store-name>Buxin Store</span></a>
+    <section class="supplier-card">
+      <span class="eyebrow">SUPPLIER INTAKE</span>
+      <h1>Add your products.</h1>
+      <p class="supplier-lead">No password needed. Enter your supplier name, then add products one by one.</p>
+
+      <div id="supplier-name-step">
+        <form id="supplier-name-form" class="settings-form">
+          <label>Supplier name<input id="supplier-name" required placeholder="Your company or your name" autocomplete="organization"></label>
+          <button class="btn btn-primary" type="submit">Continue <span>→</span></button>
+        </form>
+      </div>
+
+      <div id="supplier-product-step" class="hidden">
+        <div class="supplier-active">
+          <div>
+            <span>Supplier</span>
+            <strong id="active-supplier-name">—</strong>
+          </div>
+          <div>
+            <span>Products saved</span>
+            <strong id="supplier-product-count">0</strong>
+          </div>
+          <button type="button" id="change-supplier" class="btn btn-outline btn-small">Change supplier</button>
+        </div>
+        <form id="supplier-product-form" class="settings-form">
+          <label>Product name<input id="product-name" required placeholder="Product name"></label>
+          <label>Title / short label<input id="product-title" placeholder="Optional short title"></label>
+          <label>Price (dalasi)<input id="product-price" type="number" min="0" step="1" placeholder="0"></label>
+          <label>Category<input id="product-category" placeholder="e.g. Electronics" list="supplier-category-options"></label>
+          <datalist id="supplier-category-options"></datalist>
+          <label>Description<textarea id="product-description" rows="4" placeholder="What is this product?"></textarea></label>
+          <label>Image URL (optional)<input id="product-image" type="url" placeholder="https://..."></label>
+          <button id="supplier-save-product" class="btn btn-primary" type="submit">Save product</button>
+        </form>
+      </div>
+
+      <p id="supplier-status" class="supplier-status" role="status"></p>
+    </section>
+  </main>
+  <div id="toast" class="toast"></div>
+  <script src="js/config.js"></script>
+  <script src="js/store-data.js"></script>
+  <script src="js/products-data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/supplier-data.js"></script>
+  <script src="js/supplier.js"></script>
+</body>
+</html>

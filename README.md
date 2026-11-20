@@ -40,3 +40,9 @@ Products load from `js/products-data.js`. Photos are in `assets/products/`. Kit 
 
 ## WhatsApp checkout
 Buy Now and cart checkout open WhatsApp with a prefilled message. The customer must press Send in WhatsApp. No online payment is taken.
+
+## Supplier intake
+Share `supplier.html` privately with suppliers (no password). They enter their name, then add products one by one. Review submissions in Admin → Suppliers (`admin-suppliers.html`). Admin pages are not linked from the public storefront; open them by URL only.
+
+## Admin access
+Open `admin-login.html` directly. The public site footer does not show an Admin link.

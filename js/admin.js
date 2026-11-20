@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   const navItems=[
     {id:"home",href:"admin.html",label:"Overview"},
     {id:"products",href:"admin-products.html",label:"Products"},
+    {id:"suppliers",href:"admin-suppliers.html",label:"Suppliers"},
     {id:"gambia",href:"admin-gambia.html",label:"In The Gambia"},
     {id:"pricing",href:"admin-pricing.html",label:"Pricing"},
     {id:"shipping",href:"admin-shipping.html",label:"Shipping"},
@@ -30,6 +31,33 @@ document.addEventListener("DOMContentLoaded",()=>{
     if($("stat-categories"))$("stat-categories").textContent=new Set(list.map(p=>p.category)).size;
     if($("stat-gambia"))$("stat-gambia").textContent=list.filter(p=>p.inGambia).length;
     if($("stat-shipping"))$("stat-shipping").textContent=Store.getShippingFee()?Store.money(Store.getShippingFee()):"Not set";
+  }
+
+  function initSuppliers(){
+    const listEl=$("supplier-list"),empty=$("supplier-empty"),link=$("supplier-link");
+    if(link)link.textContent=location.origin.replace(/\/$/,"")+"/supplier.html";
+    async function render(){
+      if(!window.SupplierData){Store.toast("Supplier tools failed to load.");return}
+      listEl.innerHTML=`<p class="settings-hint">Loading suppliers…</p>`;
+      try{
+        const suppliers=await SupplierData.listSuppliers();
+        const totalProducts=suppliers.reduce((n,s)=>n+(Number(s.productCount)||0),0);
+        if($("stat-suppliers"))$("stat-suppliers").textContent=suppliers.length;
+        if($("stat-supplier-products"))$("stat-supplier-products").textContent=totalProducts;
+        empty?.classList.toggle("hidden",suppliers.length>0);
+        if(!suppliers.length){listEl.innerHTML="";return}
+        const blocks=await Promise.all(suppliers.map(async s=>{
+          const products=s.products||await SupplierData.listSupplierProducts(s.id);
+          const rows=products.length?products.map(p=>`<tr><td><strong>${Store.safeText(p.name)}</strong><small>${Store.safeText(p.title||"")}</small></td><td>${Store.safeText(p.category||"—")}</td><td>${Store.money(p.price)}</td><td>${Store.safeText(p.description||"—")}</td></tr>`).join(""):`<tr><td colspan="4">No products yet.</td></tr>`;
+          return `<article class="supplier-admin-card"><header><div><h3>${Store.safeText(s.name)}</h3><p>${products.length} product${products.length===1?"":"s"}</p></div></header><div class="table-wrap"><table class="admin-table"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Description</th></tr></thead><tbody>${rows}</tbody></table></div></article>`;
+        }));
+        listEl.innerHTML=blocks.join("");
+      }catch(err){
+        listEl.innerHTML=`<p class="form-error">Could not load suppliers. ${Store.safeText(err.message||"")}</p>`;
+      }
+    }
+    $("refresh-suppliers")?.addEventListener("click",()=>render().then(()=>Store.toast("Supplier list refreshed.")));
+    render();
   }
 
   function initProducts(){
@@ -260,6 +288,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   if(page==="home")initHome();
   if(page==="products")initProducts();
+  if(page==="suppliers")initSuppliers();
   if(page==="gambia")initGambia();
   if(page==="pricing")initPricing();
   if(page==="shipping")initShipping();
