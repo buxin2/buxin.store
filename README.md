@@ -1,4 +1,4 @@
-# Nova Store — WhatsApp E-commerce Starter
+# Buxin Store — WhatsApp E-commerce Starter
 
 A static HTML, CSS, and vanilla JavaScript storefront with product details, cart management, and WhatsApp checkout.
 

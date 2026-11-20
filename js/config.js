@@ -1,6 +1,6 @@
 /* Store configuration. Change these values for your store. */
 window.STORE_CONFIG = {
-  storeName: "Nova Store",
+  storeName: "Buxin Store",
   whatsappNumber: "919876543210", // Replace with your WhatsApp number: country code + number, digits only.
   currency: "INR",
   currencyLocale: "en-IN",

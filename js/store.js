@@ -11,7 +11,7 @@
   ];
   function read(key, fallback){try{const value=JSON.parse(localStorage.getItem(key));return value===null?fallback:value}catch(e){return fallback}}
   function write(key,value){localStorage.setItem(key,JSON.stringify(value))}
-  function getSettings(){return {...window.STORE_CONFIG,...read(SETTINGS_KEY,{})}}
+  function getSettings(){const saved=read(SETTINGS_KEY,{});const settings={...window.STORE_CONFIG,...saved};if(!saved.storeName||saved.storeName==="Nova Store")settings.storeName=window.STORE_CONFIG.storeName;return settings}
   function saveSettings(settings){write(SETTINGS_KEY,settings)}
   function getProducts(){let p=read(PRODUCTS_KEY,null);if(!Array.isArray(p)){p=sampleProducts;write(PRODUCTS_KEY,p)}return p}
   function saveProducts(products){write(PRODUCTS_KEY,products)}
@@ -30,7 +30,7 @@
   function productMessage(p,q){const total=Number(p.price)*q;return `Hello! I would like to order:\n\nPRODUCT: ${p.name}\n${p.title||""}\nQuantity: ${q}\nUnit price: ${money(p.price)}\nTotal: ${money(total)}\n\nPlease let me know how to proceed.`}
   function cartMessage(){const d=cartDetails();let msg="Hello! I would like to place an order.\n\nMY ORDER:\n\n";d.items.forEach((p,i)=>{msg+=`${i+1}. ${p.name}\n   Quantity: ${p.quantity}\n   Unit Price: ${money(p.price)}\n   Subtotal: ${money(p.subtotal)}\n\n`});msg+=`--------------------\nTOTAL ITEMS: ${d.count}\nTOTAL AMOUNT: ${money(d.total)}\n--------------------\n\nPlease let me know how to proceed with this order.`;return msg}
   function toast(message){const el=document.getElementById("toast");if(!el)return;el.textContent=message;el.classList.add("show");clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>el.classList.remove("show"),2600)}
-  function applyStoreName(){const name=getSettings().storeName||"Nova Store";document.querySelectorAll("[data-store-name]").forEach(el=>el.textContent=name);document.title=document.title.replace("Nova Store",name);const y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear()}
+  function applyStoreName(){const name=getSettings().storeName||"Buxin Store";document.querySelectorAll("[data-store-name]").forEach(el=>el.textContent=name);document.title=document.title.replace("Buxin Store",name);const y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear()}
   window.Store={getProducts,saveProducts,getCart,saveCart,addToCart,updateQuantity,removeFromCart,cartDetails,money,safeText,productImage,openWhatsApp,productMessage,cartMessage,toast,updateCartCount,getSettings,saveSettings,applyStoreName,IMAGE_FALLBACK};
   document.addEventListener("DOMContentLoaded",()=>{updateCartCount();applyStoreName()});
 })();
