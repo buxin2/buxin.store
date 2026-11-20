@@ -2,11 +2,12 @@
 window.STORE_CONFIG = {
   storeName: "Buxin Store",
   whatsappNumber: "919876543210", // Replace with your WhatsApp number: country code + number, digits only.
-  currency: "INR",
-  currencyLocale: "en-IN",
+  currency: "GMD",
+  currencyLocale: "en-GM",
   demoAdminPassword: "ChangeMe123!", // DEMO ONLY. Not secure for public production use.
   cloudinaryCloudName: "",
   cloudinaryUploadPreset: "",
-  usdToInr: 88, // Converts supplier USD kit prices into INR.
+  usdToInr: 88, // Supplier USD prices become the rupee amount already used in the catalogue.
+  inrToGmd: 0.8003321, // 20 Nov 2026 mid-market rate: 1 Indian rupee = 0.8003321 Gambian dalasi.
   priceMarkup: 1
 };

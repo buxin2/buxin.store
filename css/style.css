@@ -16,3 +16,37 @@
 .category-list.hidden{display:none!important}
 .hero-photo{width:100%;max-height:520px;object-fit:contain;border-radius:28px;display:block}
 @media(max-width:680px){.hero-photo{max-height:320px}}
+.cart-symbol{display:inline-flex;width:22px;height:22px;color:var(--ink)}
+.cart-symbol svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.cart-symbol circle{fill:currentColor;stroke:none}
+.hero{padding-bottom:20px;min-height:0}
+.products-section{padding-top:8px}
+@media(max-width:680px){.hero{padding-bottom:8px;min-height:0}.products-section{padding-top:4px}}
+.price-adjust-form select{height:44px;border:1px solid #dfe6e0;border-radius:8px;padding:0 12px;background:#fff}
+#price-reset{margin:0 23px 8px}
+.price-single{padding:8px 23px 22px}
+.price-results{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.price-result{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.price-result strong,.price-result small{display:block}
+.price-result strong{font-size:13px}
+.price-result small{color:#8a958e;font-size:11px;margin-top:3px}
+.price-result form{display:flex;gap:8px;align-items:center}
+.price-result input{width:110px;border:1px solid #dfe6e0;border-radius:8px;padding:10px}
+@media(max-width:680px){.price-result{align-items:stretch;flex-direction:column}.price-result form{width:100%}.price-result input{flex:1;width:auto}}
+.whatsapp-float{position:fixed;right:18px;bottom:18px;z-index:30;width:56px;height:56px;border:0;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 10px 24px rgba(18,140,70,.35)}
+.whatsapp-float svg{width:30px;height:30px;fill:currentColor}
+@media(max-width:680px){
+  input,select,textarea,.search-box input{font-size:16px}
+  .hero{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:center;gap:8px;padding:12px 4% 10px;min-height:0}
+  .hero h1{font-size:22px;line-height:1.05;margin:4px 0 6px}
+  .hero-copy>p{font-size:11px;line-height:1.35;max-width:none;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .hero .eyebrow{font-size:8px;letter-spacing:.08em}
+  .hero-actions{margin-top:8px;gap:8px;flex-wrap:wrap}
+  .hero-actions .btn{padding:7px 9px;font-size:11px;gap:6px}
+  .hero-actions .text-link{font-size:11px}
+  .hero-proof{margin-top:8px;font-size:9px;gap:6px}
+  .proof-avatars i{width:16px;height:16px;font-size:8px}
+  .hero-visual{min-height:0}
+  .hero-photo{max-height:148px;border-radius:16px}
+  .whatsapp-float{right:14px;bottom:14px;width:52px;height:52px}
+}

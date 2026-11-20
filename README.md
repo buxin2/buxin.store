@@ -32,7 +32,7 @@ To publish a shared catalogue for all visitors while keeping the public site sta
 Create a Cloudinary unsigned upload preset and enter its cloud name and preset in Admin > Image hosting. Do not expose your Cloudinary API secret. Unsigned uploads should be configured with appropriate restrictions in Cloudinary.
 
 ## Product catalogue
-Products load from `js/products-data.js`. Photos are in `assets/products/`. Kit prices stored in USD are shown as rupees using `usdToInr` and `priceMarkup` in `js/config.js`. Products with no supplier price show "Ask for price".
+Products load from `js/products-data.js`. Photos are in `assets/products/`. Kit prices stored in USD are turned into rupees with `usdToInr`, then shown in Gambian dalasi with `inrToGmd` in `js/config.js`. Products with no supplier price show "Ask for price".
 
 ## WhatsApp checkout
 Buy Now and cart checkout open WhatsApp with a prefilled message. The customer must press Send in WhatsApp. No online payment is taken.
