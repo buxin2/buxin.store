@@ -1,6 +1,6 @@
 window.STORE_DATA = {
   "version": 1,
-  "updatedAt": "2026-11-21T05:40:00.000Z",
+  "updatedAt": "2026-11-21T06:27:25.101Z",
   "settings": {
     "storeName": "Buxin Store",
     "whatsappNumber": "918800510790",
