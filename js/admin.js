@@ -305,7 +305,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       Store.saveSettings(s);
       Store.applyStoreName();
       renderSiteData();
-      Store.toast("Store settings saved. Lock the site data house before PUSH.");
+      Store.toast("Saved on this computer only. Lock site data house, then PUSH, so phones get this WhatsApp number.");
     });
     $("cloudinary-form")?.addEventListener("submit",e=>{
       e.preventDefault();

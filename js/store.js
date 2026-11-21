@@ -65,8 +65,35 @@
   function removeFromCart(id){saveCart(getCart().filter(i=>i.id!==id))}
   function cartDetails(){const products=getProducts(),cart=getCart();const items=cart.map(i=>{const p=products.find(x=>x.id===i.id);if(!p)return null;const quantity=i.quantity;return {...p,quantity,productSubtotal:Number(p.productPrice)*quantity,shippingSubtotal:Number(p.shipping)*quantity,subtotal:Number(p.price)*quantity}}).filter(Boolean);return {items,productTotal:items.reduce((s,i)=>s+i.productSubtotal,0),shippingTotal:items.reduce((s,i)=>s+i.shippingSubtotal,0),total:items.reduce((s,i)=>s+i.subtotal,0),count:items.reduce((s,i)=>s+i.quantity,0)}}
   function whatsappUrl(message){const number=whatsappDigits(getSettings().whatsappNumber);if(!number||number.length<8){alert("Please configure a valid WhatsApp number in the admin settings.");return null}return `https://wa.me/${number}?text=${encodeURIComponent(message)}`}
-  function openWhatsApp(message){const url=whatsappUrl(message);if(url)window.open(url,"_blank","noopener,noreferrer")}
-  function applyWhatsApp(){const contactMsg="Hello! I would like to contact Buxin Store.";const contactUrl=whatsappUrl(contactMsg);const float=document.getElementById("whatsapp-float");if(float){if(contactUrl){if(float.tagName==="A"){float.href=contactUrl;float.target="_blank";float.rel="noopener noreferrer"}float.onclick=event=>{event.preventDefault();openWhatsApp(contactMsg)}}else{float.onclick=event=>{event.preventDefault();openWhatsApp(contactMsg)}}}const contact=document.getElementById("contact-whatsapp");if(contact&&contactUrl){contact.href=contactUrl;contact.target="_blank";contact.rel="noopener noreferrer"}}
+  function isMobileWhatsApp(){return /Android|iPhone|iPad|iPod|Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent||"")}
+  function openWhatsApp(message){
+    const url=whatsappUrl(message);
+    if(!url)return;
+    // Phones often block window.open; same-tab wa.me opens the WhatsApp app reliably.
+    if(isMobileWhatsApp()){window.location.href=url;return}
+    const opened=window.open(url,"_blank","noopener,noreferrer");
+    if(!opened)window.location.href=url;
+  }
+  function applyWhatsApp(){
+    const contactMsg="Hello! I would like to contact Buxin Store.";
+    const contactUrl=whatsappUrl(contactMsg);
+    const float=document.getElementById("whatsapp-float");
+    if(float&&contactUrl){
+      if(float.tagName==="A"){
+        float.href=contactUrl;
+        float.target=isMobileWhatsApp()?"_self":"_blank";
+        float.rel="noopener noreferrer";
+      }
+      // Prefer the real link on phones; do not force window.open.
+      float.onclick=isMobileWhatsApp()?null:event=>{event.preventDefault();openWhatsApp(contactMsg)};
+    }
+    const contact=document.getElementById("contact-whatsapp");
+    if(contact&&contactUrl){
+      contact.href=contactUrl;
+      contact.target=isMobileWhatsApp()?"_self":"_blank";
+      contact.rel="noopener noreferrer";
+    }
+  }
   function priceBreakdownHtml(p){if(!Number(p.productPrice)&&!Number(p.price))return `<div class="detail-price">${money(0)}</div>`;if(p.inGambia)return `<div class="detail-price">${money(p.price)}</div><div class="price-breakdown"><span>No shipping</span><span>Available in The Gambia · buy today, get it today</span></div>`;if(Number(p.shipping)>0)return `<div class="detail-price">${money(p.price)}</div><div class="price-breakdown"><span>Product ${money(p.productPrice)}</span><span>Shipping ${money(p.shipping)}</span><span class="price-breakdown-total">Total ${money(p.price)}</span></div>`;return `<div class="detail-price">${money(p.price)}</div>`}
   function cardPriceHtml(p){if(!Number(p.price))return money(0);if(Number(p.shipping)>0)return `${money(p.price)}<small class="price-note">Product ${money(p.productPrice)} + shipping ${money(p.shipping)}</small>`;if(p.inGambia)return `${money(p.price)}<small class="price-note">No shipping</small>`;return money(p.price)}
   function productMessage(p,q){const quantity=Math.max(1,Number(q)||1);const productSub=Number(p.productPrice)*quantity;const shipSub=Number(p.shipping)*quantity;const total=Number(p.price)*quantity;let msg=`Hello! I would like to order from Buxin Store.\n\nPRODUCT\n${p.name}`;if(p.title)msg+=`\n${p.title}`;msg+=`\nQuantity: ${quantity}\n\nPRICE BREAKDOWN\nProduct price: ${money(p.productPrice)} each`;if(p.inGambia)msg+=`\nShipping: None (available in The Gambia)`;else if(Number(p.shipping)>0)msg+=`\nShipping: ${money(p.shipping)} each`;else msg+=`\nShipping: None`;msg+=`\nUnit total: ${money(p.price)} each\n\nProduct subtotal: ${money(productSub)}\nShipping subtotal: ${shipSub?money(shipSub):"None"}\n--------------------\nTOTAL TO PAY: ${money(total)}\n--------------------\n\nPlease let me know how to proceed.`;return msg}
