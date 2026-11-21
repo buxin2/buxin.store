@@ -6,13 +6,12 @@ A static HTML, CSS, and vanilla JavaScript storefront with product details, cart
 For the simplest preview, open `index.html` in a browser. For best compatibility, use a static local server (for example, VS Code Live Server).
 
 ## First setup
-1. Open `js/config.js`.
-2. Change `storeName`.
-3. Change `whatsappNumber` to your WhatsApp number in international format, digits only (example: `2207741187`).
-4. Change `demoAdminPassword` before testing. The current password is `buxin1`.
-5. Open `admin-login.html` and sign in.
-6. Add/edit/delete products in the admin dashboard.
-7. Optionally configure Cloudinary cloud name and unsigned upload preset to upload product images from the dashboard.
+1. Open `js/config.js` if you need to change `storeName` or the demo admin password (`buxin1`).
+2. Do **not** put a WhatsApp number in `config.js`. There is no default number in code.
+3. Open `admin-login.html`, sign in, go to **Settings**, enter your WhatsApp number (country code + digits only, e.g. `91XXXXXXXXXX`).
+4. Click **Lock settings into store-data.js**, then PUSH so phones and Buy now all use that number.
+5. Add/edit products, shipping, and pricing in admin as needed.
+6. Optionally configure Cloudinary cloud name and unsigned upload preset for product images.
 
 ## Demo admin access
 - Page: `admin-login.html`

@@ -1,19 +1,20 @@
 window.STORE_DATA = {
   "version": 1,
-  "updatedAt": "2026-11-20T18:21:47.384Z",
+  "updatedAt": "2026-11-21T05:40:00.000Z",
   "settings": {
     "storeName": "Buxin Store",
-    "whatsappNumber": "2207741187",
+    "whatsappNumber": "918800510790",
     "cloudinaryCloudName": "dfizb64hx",
     "cloudinaryUploadPreset": "buxin_store"
   },
-  "shippingFee": 0,
+  "shippingFee": 1300,
   "priceRules": {
-    "factor": 1,
+    "version": 2,
+    "factor": 2,
     "offset": 0,
     "overrides": {},
-    "lastOperation": "",
-    "lastAmount": null
+    "lastOperation": "multiply",
+    "lastAmount": 2
   },
   "gambiaIds": [
     "GM-KIT-01",

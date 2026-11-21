@@ -25,9 +25,9 @@
   try{const raw=localStorage.getItem(PRODUCTS_KEY);if(raw&&raw.length>400000)localStorage.removeItem(PRODUCTS_KEY)}catch(e){}
   function publishedData(){return window.STORE_DATA&&typeof window.STORE_DATA==="object"?window.STORE_DATA:{}}
   function normalizePriceRules(raw){const source=raw&&typeof raw==="object"?raw:defaultPriceRules();const factor=Number(source.factor),offset=Number(source.offset),overrides={};if(source.overrides&&typeof source.overrides==="object")Object.keys(source.overrides).forEach(id=>{const n=Number(source.overrides[id]);if(Number.isFinite(n))overrides[String(id)]=n});const lastAmount=source.lastAmount===null||source.lastAmount===undefined||source.lastAmount===""?null:Number(source.lastAmount);const version=Number(source.version)||1;return {version:Number.isFinite(version)&&version>0?version:1,factor:Number.isFinite(factor)&&factor>0?factor:1,offset:Number.isFinite(offset)?offset:0,overrides,lastOperation:typeof source.lastOperation==="string"?source.lastOperation:"",lastAmount:Number.isFinite(lastAmount)?lastAmount:null}}
-  const DEMO_WHATSAPP="919876543210";
   function whatsappDigits(value){return String(value||"").replace(/\D/g,"")}
-  function pickWhatsAppNumber(){const config=window.STORE_CONFIG||{};const published=publishedData().settings&&typeof publishedData().settings==="object"?publishedData().settings:{};const saved=hasKey(SETTINGS_KEY)?read(SETTINGS_KEY,{}):{};const candidates=[saved.whatsappNumber,published.whatsappNumber,config.whatsappNumber].map(whatsappDigits);const real=candidates.find(d=>d&&d!==DEMO_WHATSAPP&&d.length>=8);if(real)return real;const any=candidates.find(d=>d&&d.length>=8);return any||""}
+  // Number comes only from Admin save (browser) or locked store-data.js — never from config placeholders.
+  function pickWhatsAppNumber(){const published=publishedData().settings&&typeof publishedData().settings==="object"?publishedData().settings:{};const saved=hasKey(SETTINGS_KEY)?read(SETTINGS_KEY,{}):{};const candidates=[saved.whatsappNumber,published.whatsappNumber].map(whatsappDigits);return candidates.find(d=>d&&d.length>=8)||""}
   function getSettings(){const config=window.STORE_CONFIG||{};const published=publishedData().settings&&typeof publishedData().settings==="object"?publishedData().settings:{};const saved=hasKey(SETTINGS_KEY)?read(SETTINGS_KEY,{}):{};const settings={...config,...published,...saved};if(!settings.storeName||settings.storeName==="Nova Store")settings.storeName=published.storeName||config.storeName||"Buxin Store";settings.whatsappNumber=pickWhatsAppNumber();settings.currency=config.currency;settings.currencyLocale=config.currencyLocale;settings.usdToInr=config.usdToInr;settings.inrToGmd=config.inrToGmd;settings.priceMarkup=config.priceMarkup;return settings}
   function saveSettings(settings){const next={...settings,whatsappNumber:whatsappDigits(settings.whatsappNumber)};write(SETTINGS_KEY,next);rememberSiteData();notifyChange("settings");return true}
   function displayCategory(product){const category=product.category||"General";if(category==="Modules")return "Modules & Components";if(category==="Starter Kits")return "Starter & Learning Kits";return category}
@@ -78,20 +78,30 @@
     const contactMsg="Hello! I would like to contact Buxin Store.";
     const contactUrl=whatsappUrl(contactMsg);
     const float=document.getElementById("whatsapp-float");
-    if(float&&contactUrl){
-      if(float.tagName==="A"){
-        float.href=contactUrl;
-        float.target=isMobileWhatsApp()?"_self":"_blank";
-        float.rel="noopener noreferrer";
+    if(float){
+      if(contactUrl){
+        if(float.tagName==="A"){
+          float.href=contactUrl;
+          float.target=isMobileWhatsApp()?"_self":"_blank";
+          float.rel="noopener noreferrer";
+        }
+        float.style.display="";
+        float.onclick=isMobileWhatsApp()?null:event=>{event.preventDefault();openWhatsApp(contactMsg)};
+      }else{
+        if(float.tagName==="A")float.href="#";
+        float.onclick=event=>{event.preventDefault();alert("WhatsApp number is not set yet. Add it in Admin → Settings, then Lock site data house and PUSH.")};
       }
-      // Prefer the real link on phones; do not force window.open.
-      float.onclick=isMobileWhatsApp()?null:event=>{event.preventDefault();openWhatsApp(contactMsg)};
     }
     const contact=document.getElementById("contact-whatsapp");
-    if(contact&&contactUrl){
-      contact.href=contactUrl;
-      contact.target=isMobileWhatsApp()?"_self":"_blank";
-      contact.rel="noopener noreferrer";
+    if(contact){
+      if(contactUrl){
+        contact.href=contactUrl;
+        contact.target=isMobileWhatsApp()?"_self":"_blank";
+        contact.rel="noopener noreferrer";
+      }else{
+        contact.href="#";
+        contact.removeAttribute("target");
+      }
     }
   }
   function priceBreakdownHtml(p){if(!Number(p.productPrice)&&!Number(p.price))return `<div class="detail-price">${money(0)}</div>`;if(p.inGambia)return `<div class="detail-price">${money(p.price)}</div><div class="price-breakdown"><span>No shipping</span><span>Available in The Gambia · buy today, get it today</span></div>`;if(Number(p.shipping)>0)return `<div class="detail-price">${money(p.price)}</div><div class="price-breakdown"><span>Product ${money(p.productPrice)}</span><span>Shipping ${money(p.shipping)}</span><span class="price-breakdown-total">Total ${money(p.price)}</span></div>`;return `<div class="detail-price">${money(p.price)}</div>`}
@@ -101,6 +111,6 @@
   function toast(message){const el=document.getElementById("toast");if(!el)return;el.textContent=message;el.classList.add("show");clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>el.classList.remove("show"),2600)}
   function applyStoreName(){const name=getSettings().storeName||"Buxin Store";document.querySelectorAll("[data-store-name]").forEach(el=>el.textContent=name);document.title=document.title.replace("Buxin Store",name);const y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear();applyWhatsApp()}
   window.Store={getProducts,saveProducts,getCart,saveCart,addToCart,updateQuantity,removeFromCart,cartDetails,money,safeText,productImage,openWhatsApp,whatsappUrl,productMessage,cartMessage,priceBreakdownHtml,cardPriceHtml,toast,updateCartCount,getSettings,saveSettings,applyStoreName,applyWhatsApp,getPriceRules,adjustAllPrices,setProductPrice,resetPriceAdjustments,formatPriceFactor,getGambiaIds,setGambiaAvailable,getShippingFee,setShippingFee,buildSiteData,siteDataFileText,rememberSiteData,downloadSiteData,notifyChange,subscribe,IMAGE_FALLBACK,CHANGE_EVENT};
-  function bootUi(){updateCartCount();applyStoreName()}
+  function bootUi(){updateCartCount();applyStoreName();subscribe(()=>{updateCartCount();applyWhatsApp()})}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bootUi);else bootUi();
 })();
